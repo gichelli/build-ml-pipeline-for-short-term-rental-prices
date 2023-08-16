@@ -146,7 +146,7 @@ def go(args):
           "feature_importance": wandb.Image(fig_feat_imp),
         }
     )
-
+    run.finish()
 
 def plot_feature_importance(pipe, feat_names):
     # We collect the feature importance for all non-nlp features first
