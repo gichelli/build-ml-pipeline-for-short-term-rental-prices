@@ -105,9 +105,9 @@ def go(args):
     mlflow.sklearn.save_model(
         sk_pipe,
         export_path,
-        serialization_format=mlflow.sklearn.SERIALIZATION_FORMAT_CLOUDPICKLE,
-        signature=signature,
-        input_example=X_val.iloc[:5],
+        # serialization_format=mlflow.sklearn.SERIALIZATION_FORMAT_CLOUDPICKLE,
+        # # signature=signature,
+        # input_example=X_val.iloc[:5],
     )
 
     ######################################
