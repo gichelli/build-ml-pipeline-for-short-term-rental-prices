@@ -5,6 +5,10 @@ import scipy.stats
 
 def test_column_names(data):
 
+    print("************************")
+    print(type(data))
+    print("************************")
+
     expected_colums = [
         "id",
         "name",
@@ -62,4 +66,15 @@ def test_similar_neigh_distrib(data: pd.DataFrame, ref_data: pd.DataFrame, kl_th
 
 ########################################################
 # Implement here test_row_count and test_price_range   #
-########################################################
+
+# checks that the size of the dataset is reasonable (not too small, not too large)
+def test_row_count(data):
+    assert 15000 < data.shape[0] < 1000000
+
+#checks that the price range is between min_price and max_price
+def test_price_range(data, min_price, max_price):
+    print(type(data))
+    print(min_price)
+    print(max_price)
+    assert data['price'].between(min_price, max_price).all()
+#######################################################
