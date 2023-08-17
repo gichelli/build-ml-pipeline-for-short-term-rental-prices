@@ -23,17 +23,18 @@ def go(args):
 
     ######################
     #fetch input artifact we just created (sample.csv) from W&B and read it with pandas
+    logger.info("fetch input artifact(sample.csv) from W&B and read")
     artifact_local_path = run.use_artifact(args.input_artifact).file()
     df = pd.read_csv(artifact_local_path)
 
-    # Drop outliers
+    logger.info("Drop outliers")
     idx = df["price"].between(args.min_price, args.max_price)
     df = df[idx].copy()
 
-    # Convert last_review to datetime
+    logger.info("Convert last_review to datetime")
     df['last_review'] = pd.to_datetime(df['last_review'])
 
-
+    logger.info("Save results in csv file")
     df.to_csv("clean_sample.csv", index=False)
     
     ######################
@@ -43,7 +44,8 @@ def go(args):
      type=args.output_type,
      description=args.output_description,
     )
-    # df.to_csv("clean_sample.csv", index=False)
+
+    logger.info("Upload artifact to W&B")
     artifact.add_file("clean_sample.csv")
     run.log_artifact(artifact)
 
@@ -56,43 +58,43 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "--input_artifact", 
-        type=str,  ## INSERT TYPE HERE: str, float or int,
-        help="Name of artifact", ## INSERT DESCRIPTION HERE,
+        type=str, 
+        help="Name of artifact", 
         required=True
     )
 
     parser.add_argument(
         "--output_artifact", 
-        type=str, ## INSERT TYPE HERE: str, float or int,
-        help="This is output artifact",## INSERT DESCRIPTION HERE,
+        type=str,
+        help="This is output artifact",
         required=True
     )
 
     parser.add_argument(
         "--output_type", 
-        type=str,## INSERT TYPE HERE: str, float or int,
-        help="This is output type",## INSERT DESCRIPTION HERE,
+        type=str,
+        help="This is output type",
         required=True
     )
 
     parser.add_argument(
         "--output_description", 
-        type=str,## INSERT TYPE HERE: str, float or int,
-        help="Description about the artifact",## INSERT DESCRIPTION HERE,
+        type=str,
+        help="Description about the artifact",
         required=True
     )
 
     parser.add_argument(
         "--min_price", 
-        type=float,## INSERT TYPE HERE: str, float or int,
-        help="This is min price",## INSERT DESCRIPTION HERE,
+        type=float,
+        help="This is min price",
         required=True
     )
 
     parser.add_argument(
         "--max_price", 
-        type=float,## INSERT TYPE HERE: str, float or int,
-        help="This is max price ",## INSERT DESCRIPTION HERE,
+        type=float,
+        help="This is max price ",
         required=True
     )
 

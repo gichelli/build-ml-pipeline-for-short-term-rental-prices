@@ -44,12 +44,12 @@ def go(args):
     run = wandb.init(job_type="train_random_forest")
     run.config.update(args)
 
-    # Get the Random Forest configuration and update W&B
+    logger.info("Get the Random Forest configuration and update W&B")
     with open(args.rf_config) as fp:
         rf_config = json.load(fp)
     run.config.update(rf_config)
 
-    # Fix the random seed for the Random Forest, so we get reproducible results
+    logger.info("Fix the random seed for the Random Forest, so we get reproducible results")
     rf_config['random_state'] = args.random_seed
 
     ######################################
@@ -76,11 +76,12 @@ def go(args):
 
     ######################################
     # Fit the pipeline sk_pipe by calling the .fit method on X_train and y_train
+    logger.info("Fit the pipeline")
     # YOUR CODE HERE
     sk_pipe.fit(X_train, y_train)
     ######################################
 
-    # Compute r2 and MAE
+    logger.info("Compute r2 and MAE")
     logger.info("Scoring")
     r_squared = sk_pipe.score(X_val, y_val)
 
@@ -97,10 +98,10 @@ def go(args):
         shutil.rmtree("random_forest_dir")
 
     ######################################
-    # Save the sk_pipe pipeline as a mlflow.sklearn model in the directory "random_forest_dir"
+    logger.info("Save the pipeline in the directory 'random_forest_dir'")
     # HINT: use mlflow.sklearn.save_model
     # YOUR CODE HERE
-    signature = infer_signature(X_val, y_pred)
+    # signature = infer_signature(X_val, y_pred)
     export_path = "random_forest_dir"
     mlflow.sklearn.save_model(
         sk_pipe,
@@ -113,7 +114,7 @@ def go(args):
     ######################################
 
     ######################################
-    # Upload the model we just exported to W&B
+    logger.info("Upload the model we just exported to W&B")
     # HINT: use wandb.Artifact to create an artifact. Use args.output_artifact as artifact name, "model_export" as
     # type, provide a description and add rf_config as metadata. Then, use the .add_dir method of the artifact instance
     # you just created to add the "random_forest_dir" directory to the artifact, and finally use
@@ -129,18 +130,19 @@ def go(args):
     run.log_artifact(artifact)
     ######################################
 
-    # Plot feature importance
+    logger.info("Plot feature importance")
     fig_feat_imp = plot_feature_importance(sk_pipe, processed_features)
 
     ######################################
     # Here we save r_squared under the "r2" key
+    logger.info("Saving score variables r2 and mae")
     run.summary['r2'] = r_squared
     # Now log the variable "mae" under the key "mae".
     # YOUR CODE HERE
     run.summary['mae'] = mae
     ######################################
 
-    # Upload to W&B the feture importance visualization
+    logger.info("Upload to W&B the feature importance visualization")
     run.log(
         {
           "feature_importance": wandb.Image(fig_feat_imp),
